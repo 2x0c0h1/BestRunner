@@ -115,7 +115,8 @@ public class StartActivity extends AppCompatActivity{
 		ProgressBar expBar = findViewById(R.id.expBar);
 
 		LevelSystem asd = new LevelSystem(getApplicationContext());
-		levelText.setText(String.valueOf(asd.getPlayerLevel().getLevel()));
+		String levelString = "Level " + String.valueOf(asd.getPlayerLevel().getLevel());
+		levelText.setText(levelString);
 
 		expBar.setProgress(asd.getPlayerLevel().getFexp());
 

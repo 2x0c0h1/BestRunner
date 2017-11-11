@@ -23,7 +23,7 @@ public final class LevelSystem{
     }
 
     public int getDistance(){
-        return sharedPref.getInt("Distance", 0);
+        return sharedPref.getInt("Distance", 5);
     }
 
     public int getWins(){
