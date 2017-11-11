@@ -222,10 +222,10 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     public void End(View v){
-        SharedPreferences sharedPref=this.getSharedPreferences("Prefences",Context.MODE_PRIVATE);
+        SharedPreferences sharedPref=this.getSharedPreferences("Preferences",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt("Distance", sharedPref.getInt("Distance",0)+(Double.valueOf(distanceTravelled)).intValue()+6000);
-        editor.apply();
+        editor.putInt("Distance", 6000);
+        editor.commit();
         Intent intent = new Intent(getApplicationContext(), StartActivity.class);
         startActivity(intent);
     }

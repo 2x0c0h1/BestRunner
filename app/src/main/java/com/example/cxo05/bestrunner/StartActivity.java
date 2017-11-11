@@ -13,14 +13,11 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 /**
  * Created by Ang Family on 11/11/2017.
@@ -120,9 +117,10 @@ public class StartActivity extends AppCompatActivity{
 		String levelString = "Level " + String.valueOf(asd.getPlayerLevel().getLevel());
 		levelText.setText(levelString);
 
+		expBar.setMax(5000);
 		expBar.setProgress(asd.getPlayerLevel().getFexp());
 
-		Toast.makeText(StartActivity.this,"Welcome, "+sharedPref.getString("ID","user"),Toast.LENGTH_SHORT).show();
+		//Toast.makeText(StartActivity.this,"Welcome, "+sharedPref.getString("ID","user"),Toast.LENGTH_SHORT).show();
 	}
 
 	public void Start(View v){
