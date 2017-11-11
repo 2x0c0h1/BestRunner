@@ -3,4 +3,7 @@
     <color name="colorPrimary">#EC407A</color>
     <color name="colorPrimaryDark">#D81B60</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="orchid">#b87dbb</color>
+    <color name="white">#FFF</color>
 </resources>

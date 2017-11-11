@@ -3,6 +3,9 @@ package com.example.cxo05.bestrunner;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -11,12 +14,14 @@ import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.WindowManager;
 
 /**
  * Created by Ang Family on 11/11/2017.
  */
 
 public class StartActivity extends AppCompatActivity{
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -80,6 +85,12 @@ public class StartActivity extends AppCompatActivity{
 			dialog.show();
 		}
 
+		SharedPreferences sharedPref = this.getSharedPreferences("Preferences",Context.MODE_PRIVATE);
+
+		//TODO Remove when distance is added dynamically
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putInt("Distance", 10);
+		editor.apply();
 	}
 
 	public void Start(View v){
@@ -88,12 +99,11 @@ public class StartActivity extends AppCompatActivity{
 	}
 
 	public void Stats(View v){
-		final AlertDialog.Builder builder2;
-		builder2 = new AlertDialog.Builder(this);
-		builder2.setTitle("Statistics");
-		builder2.setMessage("Yo");
-		builder2.setNegativeButton("OK", null);
-		builder2.show();
+		StatsDialog asd = new StatsDialog(StartActivity.this);
+		asd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+		asd.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+		asd.show();
+		asd.getWindow().getDecorView().setSystemUiVisibility(getWindow().getDecorView().getSystemUiVisibility());
+		asd.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
 	}
-
 }
