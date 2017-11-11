@@ -87,9 +87,14 @@ public class StartActivity extends AppCompatActivity{
 
 		SharedPreferences sharedPref = this.getSharedPreferences("Preferences",Context.MODE_PRIVATE);
 
+        if (sharedPref.getBoolean("firstRun", true)) {
+
+            sharedPref.edit().putBoolean("firstRun", false).apply();
+        }
+
 		//TODO Remove when distance is added dynamically
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putInt("Distance", 10);
+		editor.putInt("Distance", 0);
 		editor.apply();
 	}
 
