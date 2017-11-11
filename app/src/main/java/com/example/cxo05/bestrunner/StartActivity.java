@@ -120,7 +120,7 @@ public class StartActivity extends AppCompatActivity{
 		String levelString = "Level " + String.valueOf(asd.getPlayerLevel().getLevel());
 		levelText.setText(levelString);
 
-		expBar.setProgress(asd.getPlayerLevel().getFexp());
+		expBar.setProgress(asd.getPlayerLevel().getFexp()/5000*100);
 
 		Toast.makeText(StartActivity.this,"Welcome, "+sharedPref.getString("ID","user"),Toast.LENGTH_SHORT).show();
 	}
