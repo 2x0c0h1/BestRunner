@@ -1,6 +1,7 @@
 package com.example.cxo05.bestrunner;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -112,6 +113,7 @@ public class MapsActivity extends FragmentActivity implements
             return;
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        mapFragment.getMapAsync(this);
     }
 
     @Override
@@ -128,14 +130,12 @@ public class MapsActivity extends FragmentActivity implements
     public void onLocationChanged(Location location) {
         Log.d("Location", "Location found");
         current.add(location);
-        if(current.size()==1)
-            mapFragment.getMapAsync(this);
-        else{
+        if(current.size()>1) {
             int Radius = 6371;
-            double lat1 = current.get(current.size()-1).getLatitude();
-            double lat2 = current.get(current.size()-2).getLatitude();
-            double lon1 = current.get(current.size()-1).getLongitude();
-            double lon2 = current.get(current.size()-2).getLongitude();
+            double lat1 = current.get(current.size() - 1).getLatitude();
+            double lat2 = current.get(current.size() - 2).getLatitude();
+            double lon1 = current.get(current.size() - 1).getLongitude();
+            double lon2 = current.get(current.size() - 2).getLongitude();
             double dLat = Math.toRadians(lat2 - lat1);
             double dLon = Math.toRadians(lon2 - lon1);
             double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
@@ -143,8 +143,8 @@ public class MapsActivity extends FragmentActivity implements
                     * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
                     * Math.sin(dLon / 2);
             double c = 2 * Math.asin(Math.sqrt(a));
-            Double valueResult = Radius * c*1000;
-            distanceTravelled+=valueResult;
+            Double valueResult = Radius * c * 1000;
+            distanceTravelled += valueResult;
             /*double km = valueResult / 1;
             DecimalFormat newFormat = new DecimalFormat("####");
             int kmInDec = Integer.valueOf(newFormat.format(km));
@@ -156,7 +156,8 @@ public class MapsActivity extends FragmentActivity implements
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         SharedPreferences sharedPref = MapsActivity.this.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         mDatabase.child("accounts").child(sharedPref.getString("ID","user")).child("Location").setValue(location.getLatitude()+","+location.getLongitude());
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()), 17.0f));
+        if(mMap!=null)
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()), 17.0f));
         resetMarkers();
     }
 
@@ -223,8 +224,10 @@ public class MapsActivity extends FragmentActivity implements
     public void End(View v){
         SharedPreferences sharedPref=this.getSharedPreferences("Prefences",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt("Distance", sharedPref.getInt("Distance",0)+(Double.valueOf(distanceTravelled)).intValue());
+        editor.putInt("Distance", sharedPref.getInt("Distance",0)+(Double.valueOf(distanceTravelled)).intValue()+6000);
         editor.apply();
+        Intent intent = new Intent(getApplicationContext(), StartActivity.class);
+        startActivity(intent);
     }
 
     private String getUrl(LatLng origin, LatLng dest) {
