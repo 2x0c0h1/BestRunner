@@ -27,8 +27,11 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONObject;
 
@@ -53,6 +56,7 @@ public class MapsActivity extends FragmentActivity implements
     private ArrayList<Location> current=new ArrayList<>();
     SupportMapFragment mapFragment;
     double distanceTravelled=0;
+    DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,14 +85,14 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.clear();
+        /*mMap.clear();
 			/*mMap.addMarker(new MarkerOptions()
 					.position(caregiver)
 					.title("You"));*/
-        mMap.addMarker(new MarkerOptions()
+        /*mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(current.get(current.size()-1).getLatitude(),current.get(current.size()-1).getLongitude()))
                 .title("You are here"));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(current.get(current.size()-1).getLatitude(),current.get(current.size()-1).getLongitude()), 10));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(current.get(current.size()-1).getLatitude(),current.get(current.size()-1).getLongitude()), 10));*/
     }
 
     @Override
@@ -96,7 +100,7 @@ public class MapsActivity extends FragmentActivity implements
         Log.d("Location", "GoogleApiClient connection has been successful");
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(5000); // Update location every second
+        mLocationRequest.setInterval(2000); // Update location every second
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -151,11 +155,14 @@ public class MapsActivity extends FragmentActivity implements
         ((TextView)findViewById(R.id.distance)).setText("Distance Ran: "+distanceTravelled+"m");
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         SharedPreferences sharedPref = MapsActivity.this.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-        mDatabase.child("accounts").child(sharedPref.getString("ID","user")).child("Location").setValue(location.getLatitude(),location.getLongitude());
+        mDatabase.child("accounts").child(sharedPref.getString("ID","user")).child("Location").setValue(location.getLatitude()+","+location.getLongitude());
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()), 17.0f));
         resetMarkers();
     }
 
     public void resetMarkers(){
+        if(mMap!=null)
+            mMap.clear();
         LatLng origin =new LatLng(1.3071,103.7691) /*new LatLng(current.get(0).getLatitude(),current.get(0).getLongitude())*/;
         LatLng dest = new LatLng(current.get(current.size()-1).getLatitude(),current.get(current.size()-1).getLongitude());
         String url = getUrl(origin, dest);
@@ -166,6 +173,51 @@ public class MapsActivity extends FragmentActivity implements
             FetchUrl FetchUrl = new FetchUrl();
             FetchUrl.execute(url);
         }
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("accounts").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("people",dataSnapshot.getChildrenCount()+"");
+                for (final DataSnapshot people: dataSnapshot.getChildren()) {
+                    if (people.hasChild("Location")){
+                        mDatabase.child("accounts").child(people.getKey()).child("Location").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                final String[] latlong = dataSnapshot.getValue().toString().split(",");
+                                mDatabase.child("accounts").child(people.getKey()).child("Rank").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        double lat1 = Double.parseDouble(latlong[0]);
+                                        double lon1 = Double.parseDouble(latlong[1]);
+                                        mMap.addMarker(new MarkerOptions()
+                                                .position(new LatLng(lat1,lon1))
+                                                .title(people.getKey()))
+                                                .setSnippet(dataSnapshot.getValue().toString());
+                                        Log.d("people",new LatLng(lat1,lon1).toString());
+                                    }
+                                    @Override
+                                    public void onCancelled(DatabaseError firebaseError) {
+                                        Log.e("The read failed: " ,firebaseError.getMessage());
+
+                                    }
+                                });
+                            }
+                            @Override
+                            public void onCancelled(DatabaseError firebaseError) {
+                                Log.e("The read failed: " ,firebaseError.getMessage());
+
+                            }
+                        });
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError firebaseError) {
+                Log.e("The read failed: " ,firebaseError.getMessage());
+
+            }
+        });
+
     }
 
     public void End(View v){
