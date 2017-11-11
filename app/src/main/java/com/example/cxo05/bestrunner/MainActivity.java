@@ -3,11 +3,18 @@ package com.example.cxo05.bestrunner;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,8 +36,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void Signup(View v){
-        if(name.getText() == null || name.getText().equals("")){
+    public void Signup(View v) {
+        if (name.getText() == null || name.getText().toString().equals("")) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
             builder.setMessage("Name cannot be empty")
@@ -38,15 +45,38 @@ public class MainActivity extends AppCompatActivity {
 
             AlertDialog dialog = builder.create();
             dialog.show();
-            return;
+        } else {
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+            rootRef.child("accounts").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    if (snapshot.hasChild(name.getText().toString())) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+                        builder.setMessage("Please register using a different name")
+                                .setTitle("Name has been used");
+
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                        return;
+                    } else {
+                        SharedPreferences sharedPref = MainActivity.this.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+                        //TODO Generate a unique ID from that is not in firebase
+
+                        sharedPref.edit().putString("ID", name.getText().toString()).apply();
+                        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                        rootRef.child("accounts").child(name.getText().toString()).setValue("null");
+                        //TODO Send ID and Name to Fire Base
+                        Intent intent = new Intent(getApplicationContext(), StartActivity.class);
+                        startActivity(intent);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.d("error", "wtf");
+                }
+            });
         }
-
-        SharedPreferences sharedPref = this.getSharedPreferences("Preferences",Context.MODE_PRIVATE);
-        //TODO Generate a unique ID from that is not in firebase
-
-        sharedPref.edit().putString("ID", "").apply();
-        //TODO Send ID and Name to Fire Base
-        Intent intent = new Intent(getApplicationContext(), StartActivity.class);
-        startActivity(intent);
     }
 }

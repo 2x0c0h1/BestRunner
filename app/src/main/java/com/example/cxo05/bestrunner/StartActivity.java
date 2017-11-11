@@ -15,6 +15,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 /**
  * Created by Ang Family on 11/11/2017.
@@ -88,7 +89,6 @@ public class StartActivity extends AppCompatActivity{
 		SharedPreferences sharedPref = this.getSharedPreferences("Preferences",Context.MODE_PRIVATE);
 
         if (sharedPref.getBoolean("firstRun", true)) {
-
             sharedPref.edit().putBoolean("firstRun", false).apply();
         }
 
@@ -96,6 +96,8 @@ public class StartActivity extends AppCompatActivity{
 		SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putInt("Distance", 0);
 		editor.apply();
+		Toast.makeText(StartActivity.this,"Welcome, "+sharedPref.getString("ID","user"),Toast.LENGTH_SHORT).show();
+
 	}
 
 	public void Start(View v){

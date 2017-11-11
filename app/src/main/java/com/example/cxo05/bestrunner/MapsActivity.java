@@ -150,7 +150,8 @@ public class MapsActivity extends FragmentActivity implements
         }
         ((TextView)findViewById(R.id.distance)).setText("Distance Ran: "+distanceTravelled+"m");
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference journalCloudEndPoint = mDatabase.child("Location");
+        SharedPreferences sharedPref = MapsActivity.this.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        mDatabase.child("accounts").child(sharedPref.getString("ID","user")).setValue(location.getLatitude(),location.getLongitude());
         resetMarkers();
     }
 
