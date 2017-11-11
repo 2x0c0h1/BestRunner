@@ -61,12 +61,9 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     } else {
                         SharedPreferences sharedPref = MainActivity.this.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-                        //TODO Generate a unique ID from that is not in firebase
-
                         sharedPref.edit().putString("ID", name.getText().toString()).apply();
                         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
                         rootRef.child("accounts").child(name.getText().toString()).setValue("null");
-                        //TODO Send ID and Name to Fire Base
                         Intent intent = new Intent(getApplicationContext(), StartActivity.class);
                         startActivity(intent);
                     }
