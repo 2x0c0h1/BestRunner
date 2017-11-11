@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
                         sharedPref.edit().putString("ID", name.getText().toString()).apply();
                         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                        rootRef.child("accounts").child(name.getText().toString()).setValue("null");
+                        rootRef.child("accounts").child(name.getText().toString()).child("Rank").setValue(0);
                         //TODO Send ID and Name to Fire Base
                         Intent intent = new Intent(getApplicationContext(), StartActivity.class);
                         startActivity(intent);
