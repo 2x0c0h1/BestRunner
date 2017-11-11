@@ -114,6 +114,8 @@ public class StartActivity extends AppCompatActivity{
 		TextView levelText = findViewById(R.id.LevelText);
 		ProgressBar expBar = findViewById(R.id.expBar);
 
+		Toast.makeText(StartActivity.this, "Distance ran " + sharedPref.getInt("Distance", 9000),Toast.LENGTH_LONG).show();
+
 		LevelSystem asd = new LevelSystem(getApplicationContext());
 		String levelString = "Level " + String.valueOf(asd.getPlayerLevel().getLevel());
 		levelText.setText(levelString);
