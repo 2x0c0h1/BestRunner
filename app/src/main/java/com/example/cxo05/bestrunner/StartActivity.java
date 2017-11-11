@@ -79,6 +79,7 @@ public class StartActivity extends AppCompatActivity{
 			dialog.setCancelable(false);
 			dialog.show();
 		}
+
 	}
 
 	public void Start(View v){
