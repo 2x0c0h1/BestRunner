@@ -44,6 +44,7 @@ public final class LevelSystem {
         pL.setFexp(
                 (getDistance() + WINEXP * getWins() + LOSSEXP * getLoss())%LEVELUP
         );
+        return pL;
     }
 
 }
