@@ -21,6 +21,22 @@
         android:textStyle="bold"
         android:layout_gravity="center"
         android:layout_margin="12dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="40sp"
+        android:text="Level: 0"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:id="@+id/LevelText"/>
+    <ProgressBar
+        android:layout_margin="12dp"
+        android:layout_gravity="center"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/expBar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:progress="25"/>
     <Button
         android:background="@color/colorPrimaryDark"
         android:layout_width="match_parent"

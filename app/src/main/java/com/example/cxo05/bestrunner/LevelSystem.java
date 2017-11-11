@@ -1,18 +1,39 @@
 package com.example.cxo05.bestrunner;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
+
 /**
  * Created by zh on 11/11/17.
  */
 
-public final class LevelSystem {
+public final class LevelSystem{
+
+    private Context context;
+    private SharedPreferences sharedPref;
 
     private final int LEVELUP = 5000;
     private final int WINEXP = 2500;
     private final int LOSSEXP = 1000;
 
-    public int getDistance(){ return 0;}
-    public int getWins(){ return 0;}
-    public int getLoss(){ return 0;}
+    public LevelSystem(Context context){
+        this.context = context;
+        sharedPref = context.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+    }
+
+    public int getDistance(){
+        return sharedPref.getInt("Distance", 0);
+    }
+
+    public int getWins(){
+
+        return sharedPref.getInt("Wins",0);
+    }
+
+    public int getLoss(){
+        return sharedPref.getInt("Losses",0);
+    }
 
     public final class PlayerProgress {
         int level; int fexp; //floating experience points
@@ -46,5 +67,4 @@ public final class LevelSystem {
         );
         return pL;
     }
-
 }

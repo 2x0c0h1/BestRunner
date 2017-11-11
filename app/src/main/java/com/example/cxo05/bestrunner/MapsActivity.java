@@ -223,7 +223,7 @@ public class MapsActivity extends FragmentActivity implements
     public void End(View v){
         SharedPreferences sharedPref=this.getSharedPreferences("Prefences",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt("Distance", sharedPref.getInt("Distance",0)+(new Double(distanceTravelled)).intValue());
+        editor.putInt("Distance", sharedPref.getInt("Distance",0)+(Double.valueOf(distanceTravelled)).intValue());
         editor.apply();
     }
 
@@ -238,7 +238,7 @@ public class MapsActivity extends FragmentActivity implements
 
         // Sensor enabled
         String sensor = "sensor=false";
-
+        
         // Building the parameters to the web service
         String parameters = str_origin + "&" + str_dest + "&" + sensor;
 

@@ -13,9 +13,14 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 /**
  * Created by Ang Family on 11/11/2017.
@@ -88,16 +93,33 @@ public class StartActivity extends AppCompatActivity{
 
 		SharedPreferences sharedPref = this.getSharedPreferences("Preferences",Context.MODE_PRIVATE);
 
-        if (sharedPref.getBoolean("firstRun", true)) {
-            sharedPref.edit().putBoolean("firstRun", false).apply();
-        }
+		if(!sharedPref.contains("Distance")){
+			SharedPreferences.Editor editor = sharedPref.edit();
+			editor.putInt("Distance", 0);
+			editor.apply();
+		}
 
-		//TODO Remove when distance is added dynamically
-		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putInt("Distance", 0);
-		editor.apply();
+		if(!sharedPref.contains("Wins")){
+			SharedPreferences.Editor editor = sharedPref.edit();
+			editor.putInt("Wins", 0);
+			editor.apply();
+		}
+
+		if(!sharedPref.contains("Losses")){
+			SharedPreferences.Editor editor = sharedPref.edit();
+			editor.putInt("Losses", 0);
+			editor.apply();
+		}
+
+		TextView levelText = findViewById(R.id.LevelText);
+		ProgressBar expBar = findViewById(R.id.expBar);
+
+		LevelSystem asd = new LevelSystem(getApplicationContext());
+		levelText.setText(String.valueOf(asd.getPlayerLevel().getLevel()));
+
+		expBar.setProgress(asd.getPlayerLevel().getFexp());
+
 		Toast.makeText(StartActivity.this,"Welcome, "+sharedPref.getString("ID","user"),Toast.LENGTH_SHORT).show();
-
 	}
 
 	public void Start(View v){
