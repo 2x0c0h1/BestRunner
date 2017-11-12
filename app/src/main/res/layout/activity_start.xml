@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:layout_margin="48dp"
-        android:src="@drawable/app_icn"
+        android:src="@drawable/appicon"
         android:id="@+id/Image"
         />
 
@@ -38,23 +38,53 @@
             android:layout_weight="1">
         </FrameLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="40sp"
-            android:text="Level: 0"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:layout_gravity="center"
-            android:id="@+id/LevelText"/>
-        <ProgressBar
-            android:layout_margin="12dp"
-            android:layout_gravity="center"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/expBar"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:progress="25"/>
+            android:layout_margin="14dp"
+            android:id="@+id/frame">
+
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/circle"
+                android:layout_gravity="center"/>
+
+            <ImageView
+                android:layout_width="116dp"
+                android:layout_height="116dp"
+                android:src="@drawable/semicircle"
+                android:layout_gravity="center"
+                android:rotation="180"
+                android:id="@+id/RightSemi"
+                android:paddingRight="58dp"
+                android:tint="@color/lightPink"/>
+
+            <ImageView
+                android:layout_width="116dp"
+                android:layout_height="116dp"
+                android:src="@drawable/semicircle"
+                android:layout_gravity="center"
+                android:paddingRight="58dp"
+                android:id="@+id/LeftSemi"
+                android:tint="@color/lightPink"/>
+
+            <ImageView
+                android:layout_width="86dp"
+                android:layout_height="86dp"
+                android:src="@drawable/circle"
+                android:layout_gravity="center"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="40sp"
+                android:text="0"
+                android:textStyle="bold"
+                android:textColor="@color/deepPink"
+                android:layout_gravity="center"
+                android:id="@+id/LevelText"/>
+        </FrameLayout>
 
         <Button
             android:background="@drawable/curve_corners"
