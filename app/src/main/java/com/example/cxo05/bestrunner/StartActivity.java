@@ -175,13 +175,12 @@ public class StartActivity extends AppCompatActivity{
 		Toast.makeText(StartActivity.this, "Distance ran " + sharedPref.getInt("Distance", 9000),Toast.LENGTH_LONG).show();
 
 		LevelSystem asd = new LevelSystem(getApplicationContext());
-		String levelString = "Level " + String.valueOf(asd.getPlayerLevel().getLevel());
-		levelText.setText(levelString);
+		levelText.setText(String.valueOf(asd.getPlayerLevel().getLevel()));
 		DatabaseReference mDatabase= FirebaseDatabase.getInstance().getReference();
 		mDatabase.child("accounts").child(sharedPref.getString("ID","user")).child("Rank").setValue(String.valueOf(asd.getPlayerLevel().getLevel()));
 
 
-		float FloatingExp =  (float) asd.getPlayerLevel().getFexp();
+		float FloatingExp =  1000f;//(float) asd.getPlayerLevel().getFexp();
 		if(FloatingExp == 0){
 			leftSemi.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.white));
 			rightSemi.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.white));
