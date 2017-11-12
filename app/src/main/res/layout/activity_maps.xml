@@ -19,12 +19,35 @@
         android:background="@color/colorPrimaryDark"
         android:text="End Run"
         android:onClick="End"/>
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/distance"
-        android:layout_margin="12dp"
-        android:textSize="20sp"
-        />
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_margin="6dp"
+            android:padding="6dp"
+            android:background="@color/colorPrimary"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:textSize="18sp"
+            android:text="You"
+            android:id="@+id/distance"
+            android:textColor="#FFFF"/>
+        <TextView
+            android:visibility="invisible"
+            android:id="@+id/challenger"
+            android:layout_margin="6dp"
+            android:padding="6dp"
+            android:background="#FFB74D"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:textSize="18sp"
+            android:text="Challenger\n(Waiting for accept)"
+            android:textColor="#FFFF"/>
+    </LinearLayout>
+
 </RelativeLayout>
 
