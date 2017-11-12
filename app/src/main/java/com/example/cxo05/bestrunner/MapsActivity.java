@@ -1,6 +1,7 @@
 package com.example.cxo05.bestrunner;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -13,10 +14,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -32,6 +35,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -63,6 +67,14 @@ public class MapsActivity extends FragmentActivity implements
     SupportMapFragment mapFragment;
     double distanceTravelled=0;
     DatabaseReference mDatabase;
+    String challenging="";
+    String challenged="";
+    double distanceSinceChallenge=0;
+    long distanceByChallenger=0;
+    ChildEventListener challengeListener;
+    ChildEventListener amChallengedListener;
+    TextView challenger;
+    boolean accepted=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +88,78 @@ public class MapsActivity extends FragmentActivity implements
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
+        challenger=(TextView)findViewById(R.id.challenger);
+        final DatabaseReference mDatabase=FirebaseDatabase.getInstance().getReference();
+        amChallengedListener=mDatabase.child("Challenges").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                final SharedPreferences sharedPref = MapsActivity.this.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+                if(dataSnapshot.getKey().matches(sharedPref.getString("ID","user"))){
+                    if(challenging.matches("")) {
+                        ArrayList<DataSnapshot> children= new ArrayList<>();
+                        for (DataSnapshot child:dataSnapshot.getChildren()){
+                            children.add(child);
+                        }
+                        final String requester=children.get(0).getKey();
+                        final long value=(Long)children.get(0).getValue();
+                        Log.d("challenge",requester);
+                        new AlertDialog.Builder(MapsActivity.this)
+                                .setTitle("Accept Challenge?")
+                                .setMessage(requester+" has challenged you!")
+                                .setCancelable(false)
+                                .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        challenged=requester;
+                                        challenger.setVisibility(View.VISIBLE);
+                                        challenger.setText(requester+"\n"+value+"m");
+                                        distanceSinceChallenge=0;
+                                        mDatabase.child("Challenges").child(sharedPref.getString("ID","user")).child(sharedPref.getString("ID","user")).setValue(distanceSinceChallenge);
+                                        mDatabase.child("Challenges").child(sharedPref.getString("ID","user")).child(challenged).addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                challenger.setText(challenged+"\n"+dataSnapshot.getValue()+"m");
+                                                distanceByChallenger=(Long)dataSnapshot.getValue();
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
+                                    }
+                                })
+                                .setNegativeButton("Reject", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        Toast.makeText(MapsActivity.this,"You rejected"+requester+"'s challenge",Toast.LENGTH_SHORT).show();
+                                        mDatabase.child("Challenges").child(sharedPref.getString("ID","user")).child("Reject").setValue("sorry");
+                                    }
+                                })
+                                .show();
+                    }
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
 
@@ -136,6 +220,7 @@ public class MapsActivity extends FragmentActivity implements
     public void onLocationChanged(Location location) {
         Log.d("Location", "Location found");
         current.add(location);
+        Double valueResult=0.0;
         if(current.size()>1) {
             int Radius = 6371;
             double lat1 = current.get(current.size() - 1).getLatitude();
@@ -149,7 +234,7 @@ public class MapsActivity extends FragmentActivity implements
                     * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
                     * Math.sin(dLon / 2);
             double c = 2 * Math.asin(Math.sqrt(a));
-            Double valueResult = Radius * c * 1000;
+            valueResult = Radius * c * 1000;
             distanceTravelled += valueResult;
             /*double km = valueResult / 1;
             DecimalFormat newFormat = new DecimalFormat("####");
@@ -158,12 +243,17 @@ public class MapsActivity extends FragmentActivity implements
             int meterInDec = Integer.valueOf(newFormat.format(meter));
             String distance= new String(kmInDec+" KM " + meterInDec+" Meter");*/
         }
-        ((TextView)findViewById(R.id.distance)).setText("Distance Ran: "+new Double(distanceTravelled).intValue()+"m");
+        ((TextView)findViewById(R.id.distance)).setText("You\n"+new Double(distanceTravelled).intValue()+"m");
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         SharedPreferences sharedPref = MapsActivity.this.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         mDatabase.child("accounts").child(sharedPref.getString("ID","user")).child("Location").setValue(location.getLatitude()+","+location.getLongitude());
         if(mMap!=null)
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()), 17.0f));
+        if(challenging!="" && accepted){
+            distanceSinceChallenge+=valueResult;
+            ((TextView)findViewById(R.id.distance)).setText("You\n"+new Double(distanceTravelled).intValue()+"m\nSince start of Chalenge: "+new Double(distanceSinceChallenge).intValue()+")");
+            mDatabase.child("Challenges").child(challenging).child(sharedPref.getString("ID","user")).setValue(distanceSinceChallenge);
+        }
         resetMarkers();
     }
 
@@ -239,12 +329,121 @@ public class MapsActivity extends FragmentActivity implements
     }
 
     public void End(View v){
-        SharedPreferences sharedPref=this.getSharedPreferences("Preferences",Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt("Distance", sharedPref.getInt("Distance",0)+new Double(distanceTravelled).intValue());
-        editor.commit();
-        Intent intent = new Intent(getApplicationContext(), StartActivity.class);
-        startActivity(intent);
+        new AlertDialog.Builder(this)
+                .setTitle("End Run?")
+                .setMessage("You have only ran "+new Double(distanceTravelled).intValue()+"m")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        final SharedPreferences sharedPref=MapsActivity.this.getSharedPreferences("Preferences",Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putInt("Distance", sharedPref.getInt("Distance",0)+new Double(distanceTravelled).intValue());
+                        editor.commit();
+                        if(!challenged.matches("") || (!challenging.matches("") && accepted)){
+                            if(distanceSinceChallenge>distanceByChallenger){
+                                new AlertDialog.Builder(MapsActivity.this)
+                                        .setTitle("You won the challenge!")
+                                        .setMessage("+2500xp")
+                                        .setPositiveButton("Yay!", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                sharedPref.edit().putInt("Wins",sharedPref.getInt("Wins",0)+1).apply();
+                                                Intent intent = new Intent(getApplicationContext(), StartActivity.class);
+                                                startActivity(intent);
+                                            }
+                                        }).show();
+                            }
+                            else{
+                                new AlertDialog.Builder(MapsActivity.this)
+                                        .setTitle("You lost the challenge!")
+                                        .setMessage("+1000xp")
+                                        .setPositiveButton("Will do better next time", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                sharedPref.edit().putInt("Losses",sharedPref.getInt("Losses",0)+1).apply();
+                                                Intent intent = new Intent(getApplicationContext(), StartActivity.class);
+                                                startActivity(intent);
+                                            }
+                                        }).show();;
+                            }
+                        }
+                        else{
+                            Intent intent = new Intent(getApplicationContext(), StartActivity.class);
+                            startActivity(intent);
+                        }
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
+
+    public void onBackPressed() {
+        End(new View(this));
+    }
+
+    public void Challenge(final String ID){
+        final DatabaseReference mDatabase= FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("Challenges").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.hasChild(ID)){
+                    SharedPreferences sharedPref=MapsActivity.this.getSharedPreferences("Preferences",Context.MODE_PRIVATE);
+                    Toast.makeText(MapsActivity.this, "Challenge sent to "+ID, Toast.LENGTH_SHORT).show();
+                    challenging=ID;
+                    distanceSinceChallenge=0;
+                    challenger.setVisibility(View.VISIBLE);
+                    challenger.setText(ID+"\n(Waiting for accept)");
+                    mDatabase.child("Challenges").child(ID).child(sharedPref.getString("ID","user")).setValue(distanceSinceChallenge);
+                    challengeListener=mDatabase.child("Challenges").child(ID).addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                            if(dataSnapshot.getKey().matches(ID)){
+                                challenger.setText(ID+"\n"+dataSnapshot.getValue()+"m");
+                                accepted=true;
+                                distanceByChallenger=(Long)dataSnapshot.getValue();
+                            }
+                            if(dataSnapshot.getKey().matches("Reject")){
+                                Toast.makeText(MapsActivity.this,ID+" has rejected your challenge",Toast.LENGTH_SHORT).show();
+                                challenging="";
+                                challenger.setVisibility(View.INVISIBLE);
+                                distanceSinceChallenge=0;
+                            }
+                        }
+
+                        @Override
+                        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                            if(dataSnapshot.getKey().matches(ID)){
+                                challenger.setText(ID+"\n"+dataSnapshot.getValue()+"m");
+                                distanceByChallenger=(Long)dataSnapshot.getValue();
+                            }
+                        }
+
+                        @Override
+                        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                        }
+
+                        @Override
+                        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+                else{
+                    Toast.makeText(MapsActivity.this, ID+" has already been challenged and cannot accept yours.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private String getUrl(LatLng origin, LatLng dest) {
@@ -329,10 +528,10 @@ public class MapsActivity extends FragmentActivity implements
         }
         else{
             StatsDialog asd = new StatsDialog(MapsActivity.this);
-            asd.DisplayDetails(ID,current.get(current.size()-1));
             asd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             asd.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
             asd.show();
+            asd.DisplayDetails(ID,current.get(current.size()-1));
             asd.getWindow().getDecorView().setSystemUiVisibility(getWindow().getDecorView().getSystemUiVisibility());
             asd.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
         }
