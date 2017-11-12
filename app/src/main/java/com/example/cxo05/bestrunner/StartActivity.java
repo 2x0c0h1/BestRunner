@@ -14,7 +14,11 @@ import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,7 +32,20 @@ public class StartActivity extends AppCompatActivity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
 		setContentView(R.layout.activity_start);
+
+		ImageView image = findViewById(R.id.Image);
+
+		//Animations
+		Animation animation1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.moveright);
+
+		image.startAnimation(animation1);
+
+		//Animations end
 		ConnectivityManager connectivityManager
 				= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -81,6 +98,7 @@ public class StartActivity extends AppCompatActivity{
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog, int id) {
 									finish();
+									System.exit(0);
 								}
 							}
 					);

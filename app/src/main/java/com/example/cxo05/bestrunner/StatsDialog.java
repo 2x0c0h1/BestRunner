@@ -26,12 +26,14 @@ public class StatsDialog extends Dialog implements View.OnClickListener{
         setContentView(R.layout.info_dialog);
         ImageButton button = (ImageButton) findViewById(R.id.close);
         button.setOnClickListener(this);
+    }
 
+    public void DisplayDetails (String ID){
         TextView details = (TextView) findViewById(R.id.stats_details);
 
         SharedPreferences sharedPref = getContext().getSharedPreferences("Preferences",Context.MODE_PRIVATE);
 
-        String string = "Distance Traveled : " + sharedPref.getInt("Distance", 0);
+        String string = sharedPref.getInt("Distance", 0) + "meters";
         details.setText(string);
     }
 
