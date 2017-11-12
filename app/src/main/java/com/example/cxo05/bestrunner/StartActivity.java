@@ -18,10 +18,13 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 /**
  * Created by Ang Family on 11/11/2017.
@@ -39,11 +42,46 @@ public class StartActivity extends AppCompatActivity{
 		setContentView(R.layout.activity_start);
 
 		ImageView image = findViewById(R.id.Image);
+		final TextView title = findViewById(R.id.Title);
+		final TextView levelText = findViewById(R.id.LevelText);
+		final ProgressBar expBar = findViewById(R.id.expBar);
+		final Button StartButton = findViewById(R.id.StartRunningButton);
+		final Button StatsButton = findViewById(R.id.StatsButton);
+
+		title.setVisibility(View.INVISIBLE);
+		levelText.setVisibility(View.INVISIBLE);
+		expBar.setVisibility(View.INVISIBLE);
+		StartButton.setVisibility(View.INVISIBLE);
+		StatsButton.setVisibility(View.INVISIBLE);
 
 		//Animations
 		Animation animation1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.moveright);
+		final Animation animation2 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.moveup);
 
 		image.startAnimation(animation1);
+
+		animation1.setAnimationListener(new Animation.AnimationListener() {
+			@Override
+			public void onAnimationStart(Animation animation) {}
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				title.setVisibility(View.VISIBLE);
+				levelText.setVisibility(View.VISIBLE);
+				expBar.setVisibility(View.VISIBLE);
+				StartButton.setVisibility(View.VISIBLE);
+				StatsButton.setVisibility(View.VISIBLE);
+
+				title.startAnimation(animation2);
+				levelText.startAnimation(animation2);
+				expBar.startAnimation(animation2);
+				StartButton.startAnimation(animation2);
+				StatsButton.startAnimation(animation2);
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {}
+		});
 
 		//Animations end
 		ConnectivityManager connectivityManager
@@ -125,9 +163,6 @@ public class StartActivity extends AppCompatActivity{
 			editor.putInt("Losses", 0);
 			editor.apply();
 		}
-
-		TextView levelText = findViewById(R.id.LevelText);
-		ProgressBar expBar = findViewById(R.id.expBar);
 
 		Toast.makeText(StartActivity.this, "Distance ran " + sharedPref.getInt("Distance", 9000),Toast.LENGTH_LONG).show();
 
