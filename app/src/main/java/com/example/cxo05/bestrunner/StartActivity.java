@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
+import android.media.Image;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -44,6 +45,8 @@ public class StartActivity extends AppCompatActivity{
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+		getSupportActionBar().hide();
+
 		setContentView(R.layout.activity_start);
 
 		ImageView image = findViewById(R.id.Image);
@@ -52,6 +55,7 @@ public class StartActivity extends AppCompatActivity{
 		final Button StartButton = findViewById(R.id.StartRunningButton);
 		final Button StatsButton = findViewById(R.id.StatsButton);
 		final FrameLayout exp = findViewById(R.id.frame);
+		final ImageView icon = findViewById(R.id.appIcon);
 
 		ImageView leftSemi = findViewById(R.id.LeftSemi);
 		ImageView rightSemi = findViewById(R.id.RightSemi);
@@ -61,6 +65,7 @@ public class StartActivity extends AppCompatActivity{
 		StartButton.setVisibility(View.INVISIBLE);
 		StatsButton.setVisibility(View.INVISIBLE);
 		exp.setVisibility(View.INVISIBLE);
+		icon.setVisibility(View.INVISIBLE);
 
 		//Animations
 		Animation animation1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.moveright);
@@ -79,12 +84,14 @@ public class StartActivity extends AppCompatActivity{
 				StartButton.setVisibility(View.VISIBLE);
 				StatsButton.setVisibility(View.VISIBLE);
 				exp.setVisibility(View.VISIBLE);
+				icon.setVisibility(View.VISIBLE);
 
 				title.startAnimation(animation2);
 				levelText.startAnimation(animation2);
 				StartButton.startAnimation(animation2);
 				StatsButton.startAnimation(animation2);
 				exp.startAnimation(animation2);
+				icon.startAnimation(animation2);
 			}
 
 		 	@Override
@@ -172,7 +179,7 @@ public class StartActivity extends AppCompatActivity{
 			editor.apply();
 		}
 
-		Toast.makeText(StartActivity.this, "Distance ran " + sharedPref.getInt("Distance", 9000),Toast.LENGTH_LONG).show();
+		Toast.makeText(StartActivity.this, "Welcome back " + sharedPref.getString("ID", ""),Toast.LENGTH_LONG).show();
 
 		LevelSystem asd = new LevelSystem(getApplicationContext());
 		levelText.setText(String.valueOf(asd.getPlayerLevel().getLevel()));

@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:layout_margin="48dp"
-        android:src="@drawable/appicon"
+        android:src="@drawable/icon"
         android:id="@+id/Image"
         />
 
@@ -32,11 +32,16 @@
             android:textColor="@color/white"
             android:layout_margin="12dp"/>
 
-        <FrameLayout
-            android:layout_width="match_parent"
+        <ImageView
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
+            android:background="@drawable/icon"
+            android:id="@+id/appIcon"
+            android:layout_gravity="center"
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="60dp"
             android:layout_weight="1">
-        </FrameLayout>
+        </ImageView>
 
         <FrameLayout
             android:layout_width="match_parent"
