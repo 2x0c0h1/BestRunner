@@ -26,7 +26,6 @@ public final class LevelSystem{
     }
 
     public int getWins(){
-
         return sharedPref.getInt("Wins",0);
     }
 
