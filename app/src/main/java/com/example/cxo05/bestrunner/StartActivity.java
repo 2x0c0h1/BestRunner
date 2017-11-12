@@ -5,20 +5,24 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -45,15 +49,18 @@ public class StartActivity extends AppCompatActivity{
 		ImageView image = findViewById(R.id.Image);
 		final TextView title = findViewById(R.id.Title);
 		final TextView levelText = findViewById(R.id.LevelText);
-		final ProgressBar expBar = findViewById(R.id.expBar);
 		final Button StartButton = findViewById(R.id.StartRunningButton);
 		final Button StatsButton = findViewById(R.id.StatsButton);
+		final FrameLayout exp = findViewById(R.id.frame);
+
+		ImageView leftSemi = findViewById(R.id.LeftSemi);
+		ImageView rightSemi = findViewById(R.id.RightSemi);
 
 		title.setVisibility(View.INVISIBLE);
 		levelText.setVisibility(View.INVISIBLE);
-		expBar.setVisibility(View.INVISIBLE);
 		StartButton.setVisibility(View.INVISIBLE);
 		StatsButton.setVisibility(View.INVISIBLE);
+		exp.setVisibility(View.INVISIBLE);
 
 		//Animations
 		Animation animation1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.moveright);
@@ -69,15 +76,15 @@ public class StartActivity extends AppCompatActivity{
 			public void onAnimationEnd(Animation animation) {
 				title.setVisibility(View.VISIBLE);
 				levelText.setVisibility(View.VISIBLE);
-				expBar.setVisibility(View.VISIBLE);
 				StartButton.setVisibility(View.VISIBLE);
 				StatsButton.setVisibility(View.VISIBLE);
+				exp.setVisibility(View.VISIBLE);
 
 				title.startAnimation(animation2);
 				levelText.startAnimation(animation2);
-				expBar.startAnimation(animation2);
 				StartButton.startAnimation(animation2);
 				StatsButton.startAnimation(animation2);
+				exp.startAnimation(animation2);
 			}
 
 		 	@Override
@@ -173,10 +180,19 @@ public class StartActivity extends AppCompatActivity{
 		DatabaseReference mDatabase= FirebaseDatabase.getInstance().getReference();
 		mDatabase.child("accounts").child(sharedPref.getString("ID","user")).child("Rank").setValue(String.valueOf(asd.getPlayerLevel().getLevel()));
 
-		expBar.setMax(5000);
-		expBar.setProgress(asd.getPlayerLevel().getFexp());
 
-		//Toast.makeText(StartActivity.this,"Welcome, "+sharedPref.getString("ID","user"),Toast.LENGTH_SHORT).show();
+		float FloatingExp =  (float) asd.getPlayerLevel().getFexp();
+		if(FloatingExp == 0){
+			leftSemi.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.white));
+			rightSemi.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.white));
+		} else if (FloatingExp <= 2500) {
+			leftSemi.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.white));
+			rightSemi.setRotation((FloatingExp/2500f)*180f);
+			rightSemi.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.crimson));
+		}else{
+			leftSemi.setRotation(FloatingExp/5000f*360f);
+		}
+
 	}
 
 	public void Start(View v){

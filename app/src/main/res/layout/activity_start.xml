@@ -47,14 +47,53 @@
             android:textColor="@color/white"
             android:layout_gravity="center"
             android:id="@+id/LevelText"/>
-        <ProgressBar
-            android:layout_margin="12dp"
-            android:layout_gravity="center"
-            android:layout_width="300dp"
+
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/expBar"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:progress="25"/>
+            android:layout_margin="12dp"
+            android:id="@+id/frame">
+
+            <ImageView
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:src="@drawable/circle"
+                android:layout_gravity="center"/>
+
+            <ImageView
+                android:layout_width="106dp"
+                android:layout_height="106dp"
+                android:src="@drawable/semicircle"
+                android:layout_gravity="center"
+                android:rotation="180"
+                android:id="@+id/RightSemi"
+                android:paddingRight="53dp"
+                android:tint="@color/lightPink"/>
+
+            <ImageView
+                android:layout_width="106dp"
+                android:layout_height="106dp"
+                android:src="@drawable/semicircle"
+                android:layout_gravity="center"
+                android:paddingRight="53dp"
+                android:id="@+id/LeftSemi"
+                android:tint="@color/lightPink"/>
+
+            <ImageView
+                android:layout_width="86dp"
+                android:layout_height="86dp"
+                android:src="@drawable/circle"
+                android:layout_gravity="center"/>
+
+            <!--<ProgressBar-->
+                <!--android:layout_margin="12dp"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:layout_width="300dp"-->
+                <!--android:layout_height="120dp"-->
+                <!--android:id="@+id/expBar"-->
+                <!--android:max="5000"-->
+                <!--android:progress="20"/>-->
+        </FrameLayout>
 
         <Button
             android:background="@drawable/curve_corners"
