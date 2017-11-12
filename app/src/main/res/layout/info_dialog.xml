@@ -3,7 +3,7 @@
     android:layout_width="300dp"
     android:layout_height="250dp"
     android:background="@drawable/curve_corners"
-    android:backgroundTint="@color/crimson">
+    android:backgroundTint="#FFB74D">
 
     <ImageButton
         android:layout_width="50dp"
@@ -31,14 +31,6 @@
             android:textSize="40sp"
             android:textStyle="bold"
             android:id="@+id/about_title" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:textSize="24sp"
-            android:textAlignment="center"
-            android:text="Distance Traveled"/>
 
         <TextView
             android:layout_width="match_parent"

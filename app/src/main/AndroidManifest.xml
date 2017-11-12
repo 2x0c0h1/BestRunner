@@ -23,7 +23,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".StartActivity"/>
+        <activity android:name=".StartActivity"
+                  android:screenOrientation="portrait"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -31,6 +32,7 @@
 
         <activity
             android:name=".MapsActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_maps"/>
     </application>
 

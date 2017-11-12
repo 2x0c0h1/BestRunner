@@ -23,6 +23,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 /**
  * Created by Ang Family on 11/11/2017.
  */
@@ -134,6 +137,8 @@ public class StartActivity extends AppCompatActivity{
 		LevelSystem asd = new LevelSystem(getApplicationContext());
 		String levelString = "Level " + String.valueOf(asd.getPlayerLevel().getLevel());
 		levelText.setText(levelString);
+		DatabaseReference mDatabase= FirebaseDatabase.getInstance().getReference();
+		mDatabase.child("accounts").child(sharedPref.getString("ID","user")).child("Rank").setValue(String.valueOf(asd.getPlayerLevel().getLevel()));
 
 		expBar.setMax(5000);
 		expBar.setProgress(asd.getPlayerLevel().getFexp());
@@ -151,6 +156,7 @@ public class StartActivity extends AppCompatActivity{
 		asd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 		asd.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
 		asd.show();
+		asd.DisplayOwnDetails();
 		asd.getWindow().getDecorView().setSystemUiVisibility(getWindow().getDecorView().getSystemUiVisibility());
 		asd.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
 	}
