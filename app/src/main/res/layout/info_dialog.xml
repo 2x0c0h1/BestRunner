@@ -3,7 +3,7 @@
     android:layout_width="300dp"
     android:layout_height="250dp"
     android:background="@drawable/curve_corners"
-    android:backgroundTint="@color/orchid">
+    android:backgroundTint="@color/crimson">
 
     <ImageButton
         android:layout_width="50dp"
@@ -26,11 +26,19 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="10dp"
-            android:text="Statistcs"
+            android:text="Statistics"
             android:textColor="@android:color/white"
             android:textSize="40sp"
             android:textStyle="bold"
-            android:id="@+id/about_title"/>
+            android:id="@+id/about_title" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textAlignment="center"
+            android:text="Distance Traveled"/>
 
         <TextView
             android:layout_width="match_parent"
