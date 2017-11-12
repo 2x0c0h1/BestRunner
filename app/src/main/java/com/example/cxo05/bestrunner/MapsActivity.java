@@ -158,7 +158,7 @@ public class MapsActivity extends FragmentActivity implements
             int meterInDec = Integer.valueOf(newFormat.format(meter));
             String distance= new String(kmInDec+" KM " + meterInDec+" Meter");*/
         }
-        ((TextView)findViewById(R.id.distance)).setText("Distance Ran: "+distanceTravelled+"m");
+        ((TextView)findViewById(R.id.distance)).setText("Distance Ran: "+new Double(distanceTravelled).intValue()+"m");
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         SharedPreferences sharedPref = MapsActivity.this.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         mDatabase.child("accounts").child(sharedPref.getString("ID","user")).child("Location").setValue(location.getLatitude()+","+location.getLongitude());
@@ -211,10 +211,6 @@ public class MapsActivity extends FragmentActivity implements
                                                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
                                                     .snippet("Rank: "+dataSnapshot.getValue()));
                                         }
-                                        mMap.addMarker(new MarkerOptions()
-                                                .position(new LatLng(lat1,lon1))
-                                                .title(people.getKey()))
-                                                .setSnippet(dataSnapshot.getValue().toString());
                                         Log.d("people",new LatLng(lat1,lon1).toString());
                                     }
                                     @Override
@@ -245,7 +241,7 @@ public class MapsActivity extends FragmentActivity implements
     public void End(View v){
         SharedPreferences sharedPref=this.getSharedPreferences("Preferences",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt("Distance", 6000);
+        editor.putInt("Distance", sharedPref.getInt("Distance",0)+new Double(distanceTravelled).intValue());
         editor.commit();
         Intent intent = new Intent(getApplicationContext(), StartActivity.class);
         startActivity(intent);
@@ -319,18 +315,21 @@ public class MapsActivity extends FragmentActivity implements
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        String ID=marker.getTitle();
+        String ID=marker.getTitle().toString();
+        Log.d("IDtag",ID);
         SharedPreferences sharedPref = MapsActivity.this.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-        if (ID.matches(sharedPref.getString("ID","user"))) {
+        if (ID.matches("You")) {
             StatsDialog asd = new StatsDialog(MapsActivity.this);
             asd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             asd.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
             asd.show();
+            asd.DisplayOwnDetails();
             asd.getWindow().getDecorView().setSystemUiVisibility(getWindow().getDecorView().getSystemUiVisibility());
             asd.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
         }
         else{
             StatsDialog asd = new StatsDialog(MapsActivity.this);
+            asd.DisplayDetails(ID,current.get(current.size()-1));
             asd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             asd.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
             asd.show();
