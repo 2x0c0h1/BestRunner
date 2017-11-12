@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -77,6 +78,15 @@ public class StatsDialog extends Dialog implements View.OnClickListener{
                             details.setText("Level "+dataSnapshot.getValue()+"\n"+new Double(valueResult).intValue()+"m away");
                             TextView title = (TextView) findViewById(R.id.about_title);
                             title.setText(ID);
+                            Button challenge = (Button) findViewById(R.id.Challenge);
+                            challenge.setVisibility(View.VISIBLE);
+                            challenge.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    ((MapsActivity)context).Challenge(ID);
+                                    dismiss();
+                                }
+                            });
                             Log.d("people",new LatLng(lat1,lon1).toString());
                         }
                         @Override

@@ -3,7 +3,7 @@
     android:layout_width="300dp"
     android:layout_height="250dp"
     android:background="@drawable/curve_corners"
-    android:backgroundTint="@color/crimson">
+    android:backgroundTint="#FFB74D">
 
     <ImageButton
         android:layout_width="50dp"
@@ -39,5 +39,21 @@
             android:textSize="24sp"
             android:textAlignment="center"
             android:id="@+id/stats_details"/>
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <Button
+            android:visibility="gone"
+            android:background="@drawable/curve_corners"
+            android:backgroundTint="@color/lightPink"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:text="Challenge"
+            android:id="@+id/Challenge"/>
     </LinearLayout>
 </RelativeLayout>
