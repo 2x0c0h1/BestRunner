@@ -3,7 +3,7 @@
     android:layout_width="300dp"
     android:layout_height="250dp"
     android:background="@drawable/curve_corners"
-    android:backgroundTint="#FFB74D">
+    android:backgroundTint="@color/crimson">
 
     <ImageButton
         android:layout_width="50dp"
