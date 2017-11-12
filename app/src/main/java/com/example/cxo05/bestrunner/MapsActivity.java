@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -14,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -25,7 +27,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -47,6 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements
+        GoogleMap.OnMarkerClickListener,
         OnMapReadyCallback,LocationListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener{
@@ -86,6 +91,7 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setOnMarkerClickListener(this);
         /*mMap.clear();
 			/*mMap.addMarker(new MarkerOptions()
 					.position(caregiver)
@@ -152,7 +158,7 @@ public class MapsActivity extends FragmentActivity implements
             int meterInDec = Integer.valueOf(newFormat.format(meter));
             String distance= new String(kmInDec+" KM " + meterInDec+" Meter");*/
         }
-        ((TextView)findViewById(R.id.distance)).setText("Distance Ran: "+distanceTravelled+"m");
+        ((TextView)findViewById(R.id.distance)).setText("Distance Ran: "+new Double(distanceTravelled).intValue()+"m");
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
         SharedPreferences sharedPref = MapsActivity.this.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         mDatabase.child("accounts").child(sharedPref.getString("ID","user")).child("Location").setValue(location.getLatitude()+","+location.getLongitude());
@@ -190,10 +196,21 @@ public class MapsActivity extends FragmentActivity implements
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         double lat1 = Double.parseDouble(latlong[0]);
                                         double lon1 = Double.parseDouble(latlong[1]);
-                                        mMap.addMarker(new MarkerOptions()
-                                                .position(new LatLng(lat1,lon1))
-                                                .title(people.getKey()))
-                                                .setSnippet(dataSnapshot.getValue().toString());
+                                        SharedPreferences sharedPref = MapsActivity.this.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+                                        if (people.getKey().matches(sharedPref.getString("ID","user"))){
+                                            mMap.addMarker(new MarkerOptions()
+                                                    .position(new LatLng(lat1,lon1))
+                                                    .title("You")
+                                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA))
+                                                    .snippet("Rank: "+dataSnapshot.getValue()));
+                                        }
+                                        else{
+                                            mMap.addMarker(new MarkerOptions()
+                                                    .position(new LatLng(lat1,lon1))
+                                                    .title(people.getKey())
+                                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+                                                    .snippet("Rank: "+dataSnapshot.getValue()));
+                                        }
                                         Log.d("people",new LatLng(lat1,lon1).toString());
                                     }
                                     @Override
@@ -224,7 +241,7 @@ public class MapsActivity extends FragmentActivity implements
     public void End(View v){
         SharedPreferences sharedPref=this.getSharedPreferences("Preferences",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt("Distance", 6000);
+        editor.putInt("Distance", sharedPref.getInt("Distance",0)+new Double(distanceTravelled).intValue());
         editor.commit();
         Intent intent = new Intent(getApplicationContext(), StartActivity.class);
         startActivity(intent);
@@ -294,6 +311,32 @@ public class MapsActivity extends FragmentActivity implements
             urlConnection.disconnect();
         }
         return data;
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        String ID=marker.getTitle().toString();
+        Log.d("IDtag",ID);
+        SharedPreferences sharedPref = MapsActivity.this.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        if (ID.matches("You")) {
+            StatsDialog asd = new StatsDialog(MapsActivity.this);
+            asd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            asd.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+            asd.show();
+            asd.DisplayOwnDetails();
+            asd.getWindow().getDecorView().setSystemUiVisibility(getWindow().getDecorView().getSystemUiVisibility());
+            asd.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+        }
+        else{
+            StatsDialog asd = new StatsDialog(MapsActivity.this);
+            asd.DisplayDetails(ID,current.get(current.size()-1));
+            asd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            asd.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+            asd.show();
+            asd.getWindow().getDecorView().setSystemUiVisibility(getWindow().getDecorView().getSystemUiVisibility());
+            asd.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+        }
+        return false;
     }
 
     // Fetches data from url passed
