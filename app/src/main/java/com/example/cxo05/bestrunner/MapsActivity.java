@@ -249,10 +249,15 @@ public class MapsActivity extends FragmentActivity implements
         mDatabase.child("accounts").child(sharedPref.getString("ID","user")).child("Location").setValue(location.getLatitude()+","+location.getLongitude());
         if(mMap!=null)
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()), 17.0f));
-        if(challenging!="" && accepted){
+        if(!challenging.matches("") && accepted){
             distanceSinceChallenge+=valueResult;
             ((TextView)findViewById(R.id.distance)).setText("You\n"+new Double(distanceTravelled).intValue()+"m\nSince start of Chalenge: "+new Double(distanceSinceChallenge).intValue()+")");
             mDatabase.child("Challenges").child(challenging).child(sharedPref.getString("ID","user")).setValue(distanceSinceChallenge);
+        }
+        if(challenged.matches("")){
+            distanceSinceChallenge+=valueResult;
+            ((TextView)findViewById(R.id.distance)).setText("You\n"+new Double(distanceTravelled).intValue()+"m\nSince start of Chalenge: "+new Double(distanceSinceChallenge).intValue()+")");
+            mDatabase.child("Challenges").child(sharedPref.getString("ID","user")).child(sharedPref.getString("ID","user")).setValue(distanceSinceChallenge);
         }
         resetMarkers();
     }
